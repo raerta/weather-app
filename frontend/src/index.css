@@ -127,12 +127,13 @@ code {
 .filterContainer button {
   padding: 0.2rem 0.4rem;
   border: 2px solid gray;
-  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 .filterContainer input {
   padding: 0.2rem 0.4rem;
   border: 2px solid gray;
-  margin-right: 10px;
 }
 .about {
   display: flex;
