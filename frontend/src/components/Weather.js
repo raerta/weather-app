@@ -22,7 +22,7 @@ function Weather() {
   var filteredCities =
     cities.length > 0 &&
     cities.filter((x) =>
-      x.name.toLowerCase().includes(filterText.toLowerCase())
+      slugify(x.name).toLowerCase().includes(slugify(filterText.toLowerCase()))
     );
 
   const cityIds = cities.length > 0 && cities.map((c) => c.id);
@@ -107,34 +107,33 @@ function Weather() {
               </svg>
             </div>
           )}
+          <div className="filterContainer">
+            <button disabled={filteredCities.length > 0 ? false : true } onClick={handleRefresh}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                width="15px"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              Refresh
+            </button>
 
-          {filteredCities && filteredCities.length > 0 && (
-            <div className="filterContainer">
-              <button onClick={handleRefresh}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  width="15px"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>{" "}
-                Refresh
-              </button>
-              <input
-                onChange={(e) => setFilterText(e.target.value)}
-                type="text"
-                value={filterText}
-                placeholder="fulltext search by name"
-              ></input>
-            </div>
-          )}
+            <input
+              onChange={(e) => setFilterText(e.target.value)}
+              type="text"
+              value={filterText}
+              placeholder="fulltext search by name"
+            ></input>
+          </div>
+
           <div className="citiesContainer">
             {filteredCities.length > 0 ? (
               filteredCities.map((city, index) => (
