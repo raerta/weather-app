@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import moment from "moment";
-
+import { apiBaseUrl } from "../../utils/config";
 
 const initialState = {
   loading: false,
@@ -13,18 +13,13 @@ const initialState = {
   refreshedCities: null,
 };
 
-
-
 export const fetchData = createAsyncThunk(
   "fetchData",
   async (city, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/weather/cityName",
-        {
-          cityName: city,
-        }
-      );
+      const response = await axios.post(`${apiBaseUrl}weather/cityName`, {
+        cityName: city,
+      });
       return response.data.weather;
     } catch (err) {
       console.log(err);
@@ -39,7 +34,7 @@ export const fetchData = createAsyncThunk(
 );
 
 export const refreshData = createAsyncThunk("refreshData", async (cityIds) => {
-  const response = await axios.post("http://localhost:5000/weather/refresh", {
+  const response = await axios.post(`${apiBaseUrl}weather/refresh`, {
     cityIds,
   });
   return response.data.weather.list;
@@ -56,7 +51,6 @@ const weatherSlice = createSlice({
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
       state.cities.splice(action.payload, 1);
-      // state.cities.slice(action.payload);
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -91,7 +85,7 @@ const weatherSlice = createSlice({
       state.loading = false;
       state.refreshSuccess = true;
       state.cities = action.payload;
-      state.updateTime = moment().format('MMMM Do YYYY, h:mm:ss a');
+      state.updateTime = moment().format("MMMM Do YYYY, h:mm:ss a");
     });
     builder.addCase(refreshData.rejected, (state, action) => {
       state.loading = false;
@@ -100,6 +94,6 @@ const weatherSlice = createSlice({
   },
 });
 
-export const { deleteItem, deleteRefreshedItem } = weatherSlice.actions;
+export const { deleteItem } = weatherSlice.actions;
 
 export default weatherSlice.reducer;
