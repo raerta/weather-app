@@ -28,17 +28,20 @@ function Weather() {
   const cityIds = cities.length > 0 && cities.map((c) => c.id);
 
   const handleRefresh = () => {
-    // const timestamp = moment(updateTime, "MMMM Do YYYY, h:mm:ss a").fromNow();
-    const timestamp = moment(updateTime, "MMMM Do YYYY, h:mm:ss a").diff(
-      Date.now(),
-      "seconds"
-    );
+    if (updateTime) {
+      const timestamp = moment(updateTime, "MMMM Do YYYY, h:mm:ss a").diff(
+        Date.now(),
+        "seconds"
+      );
 
-    if (timestamp <= -60) {
-      dispatch(refreshData(cityIds.toString()));
+      if (timestamp <= -60) {
+        dispatch(refreshData(cityIds.toString()));
+      } else {
+        console.log("60 saniye dolmadı.");
+        setModalVisible(true);
+      }
     } else {
-      console.log("60 saniye dolmadı.");
-      setModalVisible(true);
+      dispatch(refreshData(cityIds.toString()));
     }
   };
 
@@ -78,7 +81,7 @@ function Weather() {
           {modalVisible && (
             <div className="errorBox" style={{ gap: 20 }}>
               <p style={{ fontSize: "2x", fontWeight: 600 }}>
-                You can only refresh once in 1 minute.
+                You can only refresh once in 60 seconds.
               </p>
               <svg
                 onClick={() => setModalVisible(false)}

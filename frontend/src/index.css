@@ -77,7 +77,6 @@ code {
   width: 100%;
   margin-top: 10px;
   gap: 20px;
-  min-height: 600px;
 }
 .cityBox {
   position: relative;
