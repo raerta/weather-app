@@ -1,20 +1,14 @@
 const express = require("express");
 const axios = require("axios");
-const fs = require("fs");
 const { apiKey } = require("./config");
 const port = 5000;
 const app = express();
-
-const cityList = fs.readFileSync("./data/cityList.json");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "http://localhost:3000"
-  );
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 
   // Request methods you wish to allow
   res.setHeader(
@@ -36,10 +30,8 @@ app.use(function (req, res, next) {
   next();
 });
 
-
-
 app.post("/weather/cityName", async (req, res) => {
-console.log(req.body.cityName)
+  console.log(req.body.cityName);
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${req.body.cityName}&units=metric&appid=${apiKey}`;
 
   try {
@@ -48,25 +40,34 @@ console.log(req.body.cityName)
     // console.log(request.data);
     res.status(200).send({ message: "hava durumu getirildi.", weather });
   } catch (error) {
-    console.log("error", error.response ? error.response.data.message : "Bir hata oluştu");
-    res.status(404).send(error.response ? error.response.data.message : 'Şehir Bulunamadı.');
+    console.log(
+      "error",
+      error.response ? error.response.data.message : "Bir hata oluştu"
+    );
+    res
+      .status(404)
+      .send(error.response ? error.response.data.message : "Şehir Bulunamadı.");
   }
 });
 
 app.post("/weather/refresh", async (req, res) => {
-  
-  const cityIds = req.body.cityIds
-  console.log(req.body.cityIds);
+  const cityIds = req.body.cityIds;
+  // console.log(req.body.cityIds);
   const apiUrl = `https://api.openweathermap.org/data/2.5/group?id=${cityIds}&units=metric&appid=${apiKey}`;
-  console.log(apiUrl)
+  console.log(apiUrl);
 
   try {
     const request = await axios.get(apiUrl);
     const weather = request.data;
     res.status(200).send({ message: "hava durumu güncellendi.", weather });
   } catch (error) {
-    console.log("error", error.response ? error.response.data.message : "Bir hata oluştu");
-    res.status(404).send(error.response ? error.response.data.message : 'Şehir Bulunamadı.');
+    console.log(
+      "error",
+      error.response ? error.response.data.message : "Bir hata oluştu"
+    );
+    res
+      .status(404)
+      .send(error.response ? error.response.data.message : "Şehir Bulunamadı.");
   }
 });
 
