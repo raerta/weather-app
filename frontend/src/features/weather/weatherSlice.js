@@ -1,21 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import moment from "moment";
+
 
 const initialState = {
   loading: false,
   success: false,
   refreshSuccess: false,
+  updateTime: null,
   error: "",
   cities: [],
   refreshedCities: null,
 };
 
-// export const fetchData = createAsyncThunk("fetchData", async (city) => {
-//   const response = await axios.post("http://localhost:5000/weather/cityName", {
-//     cityName: city,
-//   });
-//   return response.data;
-// });
+
 
 export const fetchData = createAsyncThunk(
   "fetchData",
@@ -27,7 +25,7 @@ export const fetchData = createAsyncThunk(
           cityName: city,
         }
       );
-      return response.data;
+      return response.data.weather;
     } catch (err) {
       console.log(err);
       // Note: this is an example assuming the usage of axios. Other fetching libraries would likely have different implementations
@@ -44,7 +42,7 @@ export const refreshData = createAsyncThunk("refreshData", async (cityIds) => {
   const response = await axios.post("http://localhost:5000/weather/refresh", {
     cityIds,
   });
-  return response.data;
+  return response.data.weather.list;
 });
 
 const weatherSlice = createSlice({
@@ -57,19 +55,7 @@ const weatherSlice = createSlice({
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      console.log(action.payload);
-      console.log(state.cities);
       state.cities.splice(action.payload, 1);
-      // state.cities.slice(action.payload);
-    },
-    deleteRefreshedItem: (state, action) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those change
-      console.log(action.payload);
-      console.log(state.refreshedCities);
-      state.refreshedCities.splice(action.payload, 1);
       // state.cities.slice(action.payload);
     },
   },
@@ -91,7 +77,6 @@ const weatherSlice = createSlice({
       state.loading = false;
       if (action.payload) {
         // If a rejected action has a payload, it means that it was returned with rejectWithValue
-        console.log(action.payload);
         state.error = action.payload;
       } else {
         state.error = action.error;
@@ -105,7 +90,8 @@ const weatherSlice = createSlice({
     builder.addCase(refreshData.fulfilled, (state, action) => {
       state.loading = false;
       state.refreshSuccess = true;
-      state.refreshedCities = action.payload;
+      state.cities = action.payload;
+      state.updateTime = moment().format('MMMM Do YYYY, h:mm:ss a');
     });
     builder.addCase(refreshData.rejected, (state, action) => {
       state.loading = false;
