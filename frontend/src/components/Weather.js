@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   deleteItem,
   fetchData,
@@ -11,7 +11,7 @@ import ErrorBox from "./ErrorBox";
 
 function Weather() {
   const weather = useSelector((state) => state.weather);
-  const { loading, error, cities, updateTime } = weather;
+  const { loading, error, cities, refreshSuccess, updateTime } = weather;
 
   const dispatch = useDispatch();
 
@@ -26,6 +26,12 @@ function Weather() {
     );
 
   const cityIds = cities.length > 0 && cities.map((c) => c.id);
+
+  useEffect(() => {
+    if (refreshSuccess) {
+      setModalVisible(false);
+    }
+  }, [refreshSuccess]);
 
   const handleRefresh = () => {
     if (updateTime) {
