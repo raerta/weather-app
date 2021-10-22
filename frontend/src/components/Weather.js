@@ -18,6 +18,7 @@ function Weather() {
   const [city, setCity] = useState("");
   const [filterText, setFilterText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   var filteredCities =
     cities.length > 0 &&
@@ -44,6 +45,7 @@ function Weather() {
         dispatch(refreshData(cityIds.toString()));
       } else {
         console.log("60 saniye dolmadı.");
+        setModalMessage("You can only refresh once in 60 seconds.");
         setModalVisible(true);
       }
     } else {
@@ -52,7 +54,22 @@ function Weather() {
   };
 
   const handleFetchWeather = () => {
-    dispatch(fetchData(slugify(city)));
+    if (cities.length > 0) {
+      const isInclude = cities.filter((x) =>
+        x.name.toLowerCase().includes(city)
+      );
+      if (isInclude[0]) {
+        setModalMessage(isInclude[0].name + " is added before.");
+        setModalVisible(true);
+      } else {
+        console.log("else");
+        dispatch(fetchData(slugify(city)));
+        setModalVisible(false);
+        setModalMessage("");
+      }
+    } else {
+      dispatch(fetchData(slugify(city)));
+    }
     setCity("");
   };
 
@@ -86,9 +103,7 @@ function Weather() {
           {error && <ErrorBox message={error}></ErrorBox>}
           {modalVisible && (
             <div className="errorBox" style={{ gap: 20 }}>
-              <p style={{ fontSize: "2x", fontWeight: 600 }}>
-                You can only refresh once in 60 seconds.
-              </p>
+              <p style={{ fontSize: "2x", fontWeight: 600 }}>{modalMessage}</p>
               <svg
                 onClick={() => setModalVisible(false)}
                 xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +123,10 @@ function Weather() {
             </div>
           )}
           <div className="filterContainer">
-            <button disabled={filteredCities.length > 0 ? false : true } onClick={handleRefresh}>
+            <button
+              disabled={filteredCities.length > 0 ? false : true}
+              onClick={handleRefresh}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
